@@ -168,18 +168,18 @@ export function ReservationModal({
             {error && (
               <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
             )}
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-3 pt-2 w-full">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 py-4 rounded-xl font-medium border border-stone-300 text-stone-700"
+                className="w-[48%] py-4 rounded-xl font-medium border border-stone-300 text-stone-700"
                 disabled={submitting}
               >
                 キャンセル
               </button>
               <button
                 type="submit"
-                className="flex-1 py-4 rounded-xl font-bold text-white bg-stone-900 disabled:bg-stone-400 min-h-[48px]"
+                className="w-[48%] py-3 px-3 rounded-xl font-bold text-sm text-white bg-stone-900 disabled:bg-stone-400 min-h-[52px] leading-snug flex items-center justify-center text-center"
                 disabled={submitting}
               >
                 {submitting ? '送信中…' : '送信して確認メールを受け取る'}

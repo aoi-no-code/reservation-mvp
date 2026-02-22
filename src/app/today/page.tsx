@@ -41,7 +41,7 @@ export default async function TodayPage() {
 
   return (
     <div className="min-h-screen min-h-[100dvh] bg-[#faf9f7] text-stone-900 safe-area-padding">
-      <main className="w-full max-w-[360px] mx-auto px-5 py-10 pb-28 flex flex-col items-center text-center">
+      <main className="w-full max-w-[360px] mx-auto px-0 py-10 pb-28 flex flex-col items-center text-center">
         <h1 className="text-2xl font-semibold tracking-tight text-stone-900 mb-2">
           直近のご案内可能枠
         </h1>

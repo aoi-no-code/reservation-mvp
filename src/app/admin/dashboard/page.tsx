@@ -17,7 +17,7 @@ export default async function StylistDashboardPage() {
       <h1 className="text-xl font-bold text-stone-900 mb-4 px-1">{stylist.name} さん</h1>
 
       <div className="shrink-0 mb-6">
-        <ShareReservationLink />
+        <ShareReservationLink stylistId={stylist.id} />
       </div>
 
       <section className="flex-1 min-h-0 flex flex-col">

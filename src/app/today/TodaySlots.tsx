@@ -14,9 +14,15 @@ type SlotDisplay = {
   stylistHourlyRate?: number | null;
 };
 
-export function TodaySlots({ slots }: { slots: SlotDisplay[] }) {
+export function TodaySlots({
+  slots,
+  hideStylistName,
+}: {
+  slots: SlotDisplay[];
+  hideStylistName?: boolean;
+}) {
   const [selectedSlot, setSelectedSlot] = useState<SlotDisplay | null>(null);
-  const stylistName = slots.length > 0 ? slots[0].stylistName : undefined;
+  const stylistName = !hideStylistName && slots.length > 0 ? slots[0].stylistName : undefined;
 
   return (
     <>

@@ -14,6 +14,28 @@ export async function getPublicSlots(): Promise<PublicSlotRow[]> {
   return (data ?? []) as PublicSlotRow[];
 }
 
+export async function getPublicSlotsByStylist(stylistId: string): Promise<PublicSlotRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('get_public_slots_by_stylist', { p_stylist_id: stylistId });
+  if (error) {
+    console.error('get_public_slots_by_stylist error', error);
+    return [];
+  }
+  return (data ?? []) as PublicSlotRow[];
+}
+
+/** 美容師の表示名（公開用）。存在しない場合は null */
+export async function getStylistPublicName(stylistId: string): Promise<string | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('get_stylist_public_name', { p_stylist_id: stylistId });
+  if (error) {
+    console.error('get_stylist_public_name error', error);
+    return null;
+  }
+  const rows = (data ?? []) as { name: string }[];
+  return rows.length > 0 ? rows[0].name : null;
+}
+
 export type CreateReservationResult =
   | { ok: true; reservationId: string }
   | { ok: false; code: 'slot_full' | 'invalid_slot' | 'email_required' | 'error'; message?: string };

@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 
-export function ShareReservationLink() {
+export function ShareReservationLink({ stylistId }: { stylistId: string }) {
   const [copied, setCopied] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
 
   useEffect(() => {
-    setShareUrl(`${window.location.origin}/today`);
-  }, []);
+    const base = window.location.origin;
+    setShareUrl(stylistId ? `${base}/stylist/${stylistId}` : `${base}/today`);
+  }, [stylistId]);
 
   async function handleCopy() {
     if (!shareUrl) return;
@@ -45,7 +46,7 @@ export function ShareReservationLink() {
           </button>
         </div>
         <a
-          href="/today"
+          href={stylistId ? `/stylist/${stylistId}` : '/today'}
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm text-stone-600 underline underline-offset-2 text-center"

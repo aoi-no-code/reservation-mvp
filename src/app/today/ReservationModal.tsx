@@ -172,14 +172,14 @@ export function ReservationModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="w-[48%] py-4 rounded-xl font-medium border border-stone-300 text-stone-700"
+                className="flex-1 min-w-0 py-4 rounded-xl font-medium border border-stone-300 text-stone-700"
                 disabled={submitting}
               >
                 キャンセル
               </button>
               <button
                 type="submit"
-                className="w-[48%] py-3 px-3 rounded-xl font-bold text-sm text-white bg-stone-900 disabled:bg-stone-400 min-h-[52px] leading-snug flex items-center justify-center text-center"
+                className="flex-1 min-w-0 py-3 px-2 rounded-xl font-bold text-sm text-white bg-stone-900 disabled:bg-stone-400 min-h-[52px] leading-snug flex items-center justify-center text-center"
                 disabled={submitting}
               >
                 {submitting ? '送信中…' : '送信して確認メールを受け取る'}

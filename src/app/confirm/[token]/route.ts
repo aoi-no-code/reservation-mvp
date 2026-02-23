@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { sendConfirmedEmailToStylist } from '@/lib/email';
+import { formatMonthDayTimeJst } from '@/lib/datetime';
 import { getSlotLabelDisplay } from '@/lib/labels';
 
 export async function GET(
@@ -40,8 +41,7 @@ export async function GET(
     const stylist = stylistsArr[0] ?? null;
     const stylistEmail = stylist?.email;
     if (stylistEmail) {
-      const startAt = new Date(slot.start_at);
-      const dateTime = `${startAt.getMonth() + 1}/${startAt.getDate()} ${String(startAt.getHours()).padStart(2, '0')}:${String(startAt.getMinutes()).padStart(2, '0')}`;
+      const dateTime = formatMonthDayTimeJst(slot.start_at);
       const label = getSlotLabelDisplay(slot.label);
       await sendConfirmedEmailToStylist(
         stylistEmail,
@@ -63,8 +63,7 @@ export async function GET(
   let slotLabel = '';
   let labelParam = '';
   if (slot) {
-    const startAt = new Date(slot.start_at);
-    slotLabel = `${startAt.getMonth() + 1}/${startAt.getDate()} ${String(startAt.getHours()).padStart(2, '0')}:${String(startAt.getMinutes()).padStart(2, '0')}`;
+    slotLabel = formatMonthDayTimeJst(slot.start_at);
     labelParam = getSlotLabelDisplay(slot.label);
   }
 

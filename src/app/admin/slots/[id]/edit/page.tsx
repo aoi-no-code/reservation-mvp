@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import Link from 'next/link';
 import { getStylistsForAdmin } from '@/app/actions/admin';
+import { toDateTimeLocalJst } from '@/lib/datetime';
 import { SlotForm } from '../../SlotForm';
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim();
@@ -27,8 +28,7 @@ export default async function EditSlotPage({
   const { data: slot, error } = slotResult;
   if (error || !slot) notFound();
 
-  const start = new Date(slot.start_at);
-  const defaultStartAt = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}T${String(start.getHours()).padStart(2, '0')}:${String(start.getMinutes()).padStart(2, '0')}`;
+  const defaultStartAt = toDateTimeLocalJst(slot.start_at);
 
   return (
     <div>

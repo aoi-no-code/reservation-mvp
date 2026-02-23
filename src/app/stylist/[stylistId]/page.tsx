@@ -4,23 +4,11 @@ import {
   getStylistPublicName,
 } from '@/app/actions/reservation';
 import { getSlotLabelDisplay } from '@/lib/labels';
+import { formatDateJst, formatTimeJst } from '@/lib/datetime';
 import { TodaySlots } from '@/app/today/TodaySlots';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr);
-  const m = d.getMonth() + 1;
-  const day = d.getDate();
-  const week = ['日', '月', '火', '水', '木', '金', '土'][d.getDay()];
-  return `${m}/${day} ${week}`;
-}
-
-function formatTime(dateStr: string): string {
-  const d = new Date(dateStr);
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-}
 
 function getHourlyRateSummary(slots: { stylist_hourly_rate: number | null }[]): string | null {
   const rates = Array.from(new Set(slots.map((s) => s.stylist_hourly_rate).filter((r): r is number => r != null)));
@@ -82,8 +70,8 @@ export default async function StylistReservationPage({ params }: Props) {
             hideStylistName
             slots={slots.map((s) => ({
               id: s.id,
-              dateLabel: formatDate(s.start_at),
-              timeLabel: formatTime(s.start_at),
+              dateLabel: formatDateJst(s.start_at),
+              timeLabel: formatTimeJst(s.start_at),
               label: getSlotLabelDisplay(s.label),
               remaining: s.remaining,
               note: s.note,

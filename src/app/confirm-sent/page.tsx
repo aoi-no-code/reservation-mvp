@@ -18,7 +18,7 @@ export default function ConfirmSentPage() {
           メールが届かない場合は、迷惑メールフォルダをご確認ください。
         </p>
         <Link
-          href="/today"
+          href="/"
           className="inline-block py-4 px-8 rounded-xl font-bold text-white bg-stone-900"
         >
           枠一覧に戻る

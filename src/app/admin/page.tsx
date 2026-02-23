@@ -45,7 +45,7 @@ export default async function AdminPage() {
       <h1 className="text-xl font-bold mb-6">表示する3枠の管理</h1>
       <p className="text-sm text-stone-600 mb-6">
         ここで登録した枠のうち、<strong>is_active が ON</strong> で
-        <strong>未来の時刻</strong>のものから最大3件が /today に表示されます。
+        <strong>未来の時刻</strong>のものから最大3件がトップ（/）に表示されます。
       </p>
       <div className="mb-6 flex gap-3">
         <Link

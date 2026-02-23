@@ -32,7 +32,7 @@ export default function ThanksPage({
           </div>
         )}
         <Link
-          href="/today"
+          href="/"
           className="inline-block py-4 px-8 rounded-xl font-bold text-white bg-stone-900"
         >
           トップに戻る

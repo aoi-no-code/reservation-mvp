@@ -8,7 +8,7 @@ export function ShareReservationLink({ stylistId }: { stylistId: string }) {
 
   useEffect(() => {
     const base = window.location.origin;
-    setShareUrl(stylistId ? `${base}/stylist/${stylistId}` : `${base}/today`);
+    setShareUrl(stylistId ? `${base}/stylist/${stylistId}` : `${base}/`);
   }, [stylistId]);
 
   async function handleCopy() {
@@ -46,7 +46,7 @@ export function ShareReservationLink({ stylistId }: { stylistId: string }) {
           </button>
         </div>
         <a
-          href={stylistId ? `/stylist/${stylistId}` : '/today'}
+          href={stylistId ? `/stylist/${stylistId}` : '/'}
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm text-stone-600 underline underline-offset-2 text-center"

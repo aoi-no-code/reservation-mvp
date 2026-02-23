@@ -10,7 +10,7 @@ export default async function StylistDashboardPage() {
   }
 
   const { slots, reservationsBySlotId } = await getStylistSlotsWithReservations(stylist.id);
-  const displaySlots = slots.slice(0, 2);
+  const displaySlots = slots.slice(0, 3);
 
   return (
     <div className="flex flex-col min-h-[calc(100dvh-4rem)] pb-6">

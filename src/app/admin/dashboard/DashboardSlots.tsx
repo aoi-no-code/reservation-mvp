@@ -232,14 +232,16 @@ type DashboardSlotsProps = {
 export function DashboardSlots({ slots, reservationsBySlotId }: DashboardSlotsProps) {
   const slot1 = slots[0] ?? null;
   const slot2 = slots[1] ?? null;
+  const slot3 = slots[2] ?? null;
   const res1 = slot1 ? reservationsBySlotId[slot1.id] ?? null : null;
   const res2 = slot2 ? reservationsBySlotId[slot2.id] ?? null : null;
+  const res3 = slot3 ? reservationsBySlotId[slot3.id] ?? null : null;
 
   return (
     <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-auto">
       <SlotCard slot={slot1} reservation={res1} index={1} />
       <SlotCard slot={slot2} reservation={res2} index={2} />
-      <SlotCard slot={null} reservation={null} index={3} />
+      <SlotCard slot={slot3} reservation={res3} index={3} />
     </div>
   );
 }

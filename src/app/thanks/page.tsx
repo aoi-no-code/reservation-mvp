@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 export const metadata = {
   title: 'ご予約ありがとうございます',
   description: 'ご予約を承りました。',
@@ -31,12 +29,7 @@ export default function ThanksPage({
             </p>
           </div>
         )}
-        <Link
-          href="/"
-          className="inline-block py-4 px-8 rounded-xl font-bold text-white bg-stone-900"
-        >
-          トップに戻る
-        </Link>
+        <p className="text-sm text-stone-500">この画面は閉じていただいて問題ありません。</p>
       </main>
     </div>
   );

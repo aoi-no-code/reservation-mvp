@@ -11,7 +11,9 @@ export async function GET(
 ) {
   const { token } = await params;
   if (!token?.trim()) {
-    return NextResponse.redirect(new URL('/?error=invalid', process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'));
+    return NextResponse.redirect(
+      new URL('/confirm-sent?error=invalid', process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000')
+    );
   }
 
   const supabase = await createClient();
@@ -22,7 +24,7 @@ export async function GET(
   if (confirmError || !reservationId) {
     console.error('confirm_reservation error', confirmError);
     return NextResponse.redirect(
-      new URL('/?error=confirm_failed', process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000')
+      new URL('/confirm-sent?error=confirm_failed', process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000')
     );
   }
 

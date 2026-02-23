@@ -5,7 +5,7 @@ import {
 } from '@/app/actions/reservation';
 import { getSlotLabelDisplay } from '@/lib/labels';
 import { formatDateJst, formatTimeJst } from '@/lib/datetime';
-import { TodaySlots } from '@/app/today/TodaySlots';
+import { TodaySlots } from '@/components/reservation/TodaySlots';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;

@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 export const metadata = {
   title: '確認メールを送りました',
   description: 'ご登録のメールアドレスに確認リンクを送信しました。',
@@ -17,12 +15,7 @@ export default function ConfirmSentPage() {
         <p className="text-sm text-stone-500 mb-8">
           メールが届かない場合は、迷惑メールフォルダをご確認ください。
         </p>
-        <Link
-          href="/"
-          className="inline-block py-4 px-8 rounded-xl font-bold text-white bg-stone-900"
-        >
-          枠一覧に戻る
-        </Link>
+        <p className="text-sm text-stone-500">この画面は閉じていただいて問題ありません。</p>
       </main>
     </div>
   );

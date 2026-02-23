@@ -73,7 +73,7 @@ export function ReservationModal({
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      <div className="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl max-h-[90vh] overflow-y-auto shadow-xl">
+      <div className="bg-white w-screen max-w-none sm:w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl max-h-[90vh] overflow-y-auto shadow-xl">
         <div className="sticky top-0 bg-white border-b border-stone-200 px-4 py-3 flex items-center justify-between">
           <h2 id="modal-title" className="font-bold text-stone-900">
             予約フォーム

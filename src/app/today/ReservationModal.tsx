@@ -45,6 +45,10 @@ export function ReservationModal({
       setError('確認メールを送るため、メールアドレスを入力してください。');
       return;
     }
+    if (!instagramId.trim()) {
+      setError('インスタのIDを入力してください。');
+      return;
+    }
     setError(null);
     setSubmitting(true);
     const slotLabelForEmail = `${slot.dateLabel} ${slot.timeLabel}（${slot.label}）`;
@@ -140,7 +144,7 @@ export function ReservationModal({
             </div>
             <div>
               <label htmlFor="instagram_id" className="block text-sm font-medium text-stone-700 mb-1">
-                インスタのID（任意）
+                インスタのID <span className="text-red-500">*</span>
               </label>
               <input
                 id="instagram_id"
@@ -149,6 +153,7 @@ export function ReservationModal({
                 onChange={(e) => setInstagramId(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-stone-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 placeholder="@example"
+                required
                 disabled={submitting}
               />
             </div>

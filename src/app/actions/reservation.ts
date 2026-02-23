@@ -38,7 +38,7 @@ export async function getStylistPublicName(stylistId: string): Promise<string | 
 
 export type CreateReservationResult =
   | { ok: true; reservationId: string }
-  | { ok: false; code: 'slot_full' | 'invalid_slot' | 'email_required' | 'error'; message?: string };
+  | { ok: false; code: 'slot_full' | 'invalid_slot' | 'email_required' | 'instagram_required' | 'error'; message?: string };
 
 export async function createReservation(
   slotId: string,
@@ -53,6 +53,10 @@ export async function createReservation(
   if (!trimmedEmail) {
     return { ok: false, code: 'email_required', message: '確認メールを送るため、メールアドレスを入力してください。' };
   }
+  const trimmedInstagramId = instagramId?.trim() || null;
+  if (!trimmedInstagramId) {
+    return { ok: false, code: 'instagram_required', message: 'インスタのIDを入力してください。' };
+  }
 
   const supabase = await createClient();
   const { data, error } = await supabase.rpc('create_reservation', {
@@ -60,7 +64,7 @@ export async function createReservation(
     p_name: name.trim(),
     p_phone: phone.trim(),
     p_email: trimmedEmail,
-    p_instagram_id: instagramId?.trim() || null,
+    p_instagram_id: trimmedInstagramId,
     p_menu_note: menuNote?.trim() || null,
   });
 

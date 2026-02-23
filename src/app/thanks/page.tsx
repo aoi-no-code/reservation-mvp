@@ -20,7 +20,7 @@ export default function ThanksPage({
       <main className="max-w-md w-full text-center">
         <h1 className="text-xl font-bold mb-4">ご予約ありがとうございます</h1>
         <p className="text-stone-600 mb-6">
-          ご予約を承りました。内容をご確認のうえ、ご連絡させていただきます。
+          ご予約を承りました。内容をご確認のうえ、ご来店お待ちしております。
         </p>
         {(slot || label) && (
           <div className="rounded-2xl bg-white border border-stone-200 p-6 mb-8 text-left">

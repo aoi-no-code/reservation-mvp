@@ -188,12 +188,17 @@ function SlotCard({ slot, reservation, index }: SlotCardProps) {
             />
             表示
           </label>
-          {reservation && (
-            <span className="text-sm text-emerald-700 truncate" title={reservation.name}>
-              予約: {reservation.name}
-            </span>
-          )}
         </div>
+        {reservation && (
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 px-3 py-2 text-xs text-stone-700 space-y-1">
+            <p className="font-semibold text-emerald-800">予約者情報</p>
+            <p>お名前: {reservation.name}</p>
+            <p>電話番号: {reservation.phone}</p>
+            <p>メール: {reservation.email ?? '—'}</p>
+            <p>インスタID: {reservation.instagram_id ?? '—'}</p>
+            <p>メニュー: {reservation.menu_note ?? '—'}</p>
+          </div>
+        )}
         {error && <p className="text-sm text-red-600 shrink-0">{error}</p>}
         <div className="flex gap-2 shrink-0 pt-1">
           <button

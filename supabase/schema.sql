@@ -175,24 +175,3 @@ CREATE POLICY "reservations_admin_select"
   TO authenticated
   USING (true);
 
--- --------------------------------------------
--- 5. 管理用ビュー（残り枠付きスロット）
--- --------------------------------------------
-CREATE OR REPLACE VIEW public.slots_with_remaining AS
-SELECT
-  s.id,
-  s.stylist_id,
-  s.start_at,
-  s.label,
-  s.note,
-  s.is_active,
-  s.created_at,
-  (1 - COALESCE(r.cnt, 0)) AS remaining
-FROM public.slots s
-LEFT JOIN (
-  SELECT slot_id, COUNT(*)::int AS cnt
-  FROM public.reservations
-  GROUP BY slot_id
-) r ON s.id = r.slot_id;
-
-ALTER VIEW public.slots_with_remaining SET (security_invoker = on);

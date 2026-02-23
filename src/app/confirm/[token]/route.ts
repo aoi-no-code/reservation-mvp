@@ -33,12 +33,20 @@ export async function GET(
     .eq('id', reservationId)
     .single();
 
-  type SlotRow = { start_at: string; label: string; stylists: { name: string; email: string | null }[] | null };
+  type SlotRow = {
+    start_at: string;
+    label: string;
+    stylists:
+      | { name: string; email: string | null }
+      | { name: string; email: string | null }[]
+      | null;
+  };
   if (row?.slots && typeof row.slots === 'object' && row.slots !== null) {
     const slotsRaw = row.slots as unknown as SlotRow | SlotRow[];
     const slot = Array.isArray(slotsRaw) ? slotsRaw[0] : slotsRaw;
-    const stylistsArr = slot?.stylists && Array.isArray(slot.stylists) ? slot.stylists : [];
-    const stylist = stylistsArr[0] ?? null;
+    const stylist = Array.isArray(slot?.stylists)
+      ? slot.stylists[0] ?? null
+      : slot?.stylists ?? null;
     const stylistEmail = stylist?.email;
     if (stylistEmail) {
       const dateTime = formatMonthDayTimeJst(slot.start_at);
@@ -51,6 +59,10 @@ export async function GET(
         (row.phone as string) ?? '',
         (row.menu_note as string) || null
       );
+    } else {
+      console.warn('stylist email is missing, skip notification', {
+        reservationId,
+      });
     }
   }
 

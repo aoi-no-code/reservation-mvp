@@ -110,8 +110,15 @@ async function netPreflight(urlString) {
     console.log(`net preflight: HTTP ${response.status} (${timeoutMs}ms budget)`);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
+    const aborted =
+      message.includes("aborted") ||
+      message.includes("Abort") ||
+      (error && typeof error === "object" && error.name === "AbortError");
+    const hint = aborted
+      ? ` ${timeoutMs}ms 以内に応答がありませんでした。SALONBOARD_NET_PREFLIGHT_MS を延ばすか、共有ランナーから届かない場合はセルフホステッド runner / 自宅PC / VPS での実行を検討してください。`
+      : "";
     throw new Error(
-      `salonboard.com への到達確認に失敗しました。GitHub Actions のランナーから遮断・遅延されている可能性があります。(${message})`
+      `salonboard.com への到達確認に失敗しました。共有ランナーからの遮断・経路の遅延の可能性があります。(${message})${hint}`
     );
   } finally {
     clearTimeout(timer);

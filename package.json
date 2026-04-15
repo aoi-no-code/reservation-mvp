@@ -6,12 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "sb:login": "node scripts/login.js",
+    "sb:reserve": "node scripts/reserve.js",
+    "sb:sync": "node scripts/sync-to-salonboard.js"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.97.0",
+    "dotenv": "^17.4.2",
     "next": "14.2.35",
+    "playwright": "^1.59.1",
     "react": "^18",
     "react-dom": "^18",
     "resend": "^6.9.2"
@@ -25,5 +30,10 @@
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
-  }
+  },
+  "description": "Instagram ストーリーなどからの流入を想定した「表示する3枠だけを見せて予約を促す」スマホファーストの予約 MVP です。",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

@@ -17,6 +17,12 @@ const META_PATH = path.join(AUTH_DIR, "salonboard-meta.json");
 const LOGIN_COOLDOWN_MINUTES = Number(process.env.SALONBOARD_LOGIN_COOLDOWN_MINUTES || "30");
 const FORCE_LOGIN = process.env.SALONBOARD_FORCE_LOGIN === "1";
 const TOP_URL = "https://salonboard.com/CLP/bt/top/";
+const GOTO_TIMEOUT_MS = Number(process.env.SALONBOARD_GOTO_TIMEOUT_MS || "45000");
+const GOTO_WAIT_UNTIL = process.env.SALONBOARD_GOTO_WAIT_UNTIL || "domcontentloaded";
+const GOTO_RETRIES = Math.max(1, Number(process.env.SALONBOARD_GOTO_RETRIES || "3"));
+const USER_AGENT =
+  process.env.SALONBOARD_USER_AGENT ||
+  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
 if (!ID || !PASSWORD) {
   console.error("Missing SALONBOARD_ID or SALONBOARD_PASSWORD in env.");
@@ -68,10 +74,37 @@ function isInCooldown(meta) {
   return elapsedMs < LOGIN_COOLDOWN_MINUTES * 60 * 1000;
 }
 
+function browserContextOptions(storageStatePath) {
+  return {
+    userAgent: USER_AGENT,
+    locale: "ja-JP",
+    timezoneId: "Asia/Tokyo",
+    ...(storageStatePath ? { storageState: storageStatePath } : {}),
+  };
+}
+
+async function gotoWithRetries(page, url, label) {
+  let lastError;
+  for (let attempt = 1; attempt <= GOTO_RETRIES; attempt += 1) {
+    try {
+      await page.goto(url, { waitUntil: GOTO_WAIT_UNTIL, timeout: GOTO_TIMEOUT_MS });
+      return;
+    } catch (error) {
+      lastError = error;
+      console.error(`${label}: goto attempt ${attempt}/${GOTO_RETRIES} failed: ${error.message}`);
+      if (attempt < GOTO_RETRIES) {
+        const backoffMs = 2000 * attempt;
+        await page.waitForTimeout(backoffMs);
+      }
+    }
+  }
+  throw lastError;
+}
+
 async function isLoggedInWithCurrentContext(context) {
   const page = await context.newPage();
   try {
-    await page.goto(TOP_URL, { waitUntil: "domcontentloaded", timeout: 30000 });
+    await gotoWithRetries(page, TOP_URL, "session-check");
     await page.waitForTimeout(1500);
     return !page.url().includes("/login");
   } catch {
@@ -87,7 +120,9 @@ async function runLogin() {
   const hasState = fs.existsSync(STATE_PATH);
   const useSavedState = hasState && !FORCE_LOGIN;
 
-  const context = await browser.newContext(useSavedState ? { storageState: STATE_PATH } : {});
+  const context = await browser.newContext(
+    browserContextOptions(useSavedState ? STATE_PATH : null)
+  );
 
   try {
     if (useSavedState) {
@@ -109,7 +144,7 @@ async function runLogin() {
 
     writeMeta({ ...meta, lastLoginAttemptAt: Date.now() });
     const page = await context.newPage();
-    await page.goto(LOGIN_URL, { waitUntil: "domcontentloaded", timeout: 45000 });
+    await gotoWithRetries(page, LOGIN_URL, "login");
     await safeScreenshot(page, "salonboard-before-login.png");
 
     const idInput = await firstVisible(page, [

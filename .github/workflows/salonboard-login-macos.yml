@@ -1,22 +1,14 @@
-# Salon Board へ毎回フルログイン（GitHub Actions 用）
-# リポジトリの Settings → Secrets and variables → Actions に次を登録:
-#   SALONBOARD_ID
-#   SALONBOARD_PASSWORD
-#
-# 手動実行: Actions タブ → 本ワークフロー → Run workflow
-#
-# 注意: 共有ランナー（ubuntu-latest）から salonboard.com に届かないことがあります。
-# プリフライトで失敗する場合は「salonboard-login-macos」ワークフローを試すか、
-# セルフホステッド runner / 自宅PC / VPS で実行してください。
-name: salonboard-login
+# Salon Board ログイン（macOS ランナー版）— 出口IPが変わるため ubuntu で届かない場合の代替
+# Secrets: SALONBOARD_ID, SALONBOARD_PASSWORD（Repository secrets）
+name: salonboard-login-macos
 
 on:
   workflow_dispatch:
 
 jobs:
   login:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+    runs-on: macos-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -39,8 +31,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright Chromium + OS deps
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright Chromium (macOS)
+        run: npx playwright install chromium
 
       - name: Login (headless, force fresh context)
         env:
@@ -48,22 +40,18 @@ jobs:
           SALONBOARD_PASSWORD: ${{ secrets.SALONBOARD_PASSWORD }}
           SALONBOARD_HEADLESS: "1"
           SALONBOARD_FORCE_LOGIN: "1"
-          # CI では手動 CAPTCHA 待ちを短く（必要なら値を上げる）
           SALONBOARD_MANUAL_WAIT_MS: "8000"
-          # 到達できない場合に「何十分も待つ」のを避ける（1回目長め・2回目短め）
-          # 遮断時は長く待っても失敗するため短め（代替は salonboard-login-macos）
-          SALONBOARD_NET_PREFLIGHT_MS: "20000"
+          SALONBOARD_NET_PREFLIGHT_MS: "60000"
           SALONBOARD_GOTO_TIMEOUT_MS: "45000"
           SALONBOARD_GOTO_RETRY_TIMEOUT_MS: "25000"
           SALONBOARD_GOTO_WAIT_UNTIL: "commit"
           SALONBOARD_GOTO_RETRIES: "2"
-          SALONBOARD_CHROMIUM_EXTRA_ARGS: "--disable-dev-shm-usage"
         run: npm run sb:login
 
       - name: Upload debug screenshots (if any)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: salonboard-login-screenshots
+          name: salonboard-login-macos-screenshots
           path: tmp/
           if-no-files-found: ignore

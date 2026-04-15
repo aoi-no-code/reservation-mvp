@@ -46,10 +46,13 @@ jobs:
           SALONBOARD_FORCE_LOGIN: "1"
           # CI では手動 CAPTCHA 待ちを短く（必要なら値を上げる）
           SALONBOARD_MANUAL_WAIT_MS: "8000"
-          # Actions ランナーは遅延・遮断がありやすいので長め＋リトライ
-          SALONBOARD_GOTO_TIMEOUT_MS: "120000"
+          # 到達できない場合に「何十分も待つ」のを避ける（1回目長め・2回目短め）
+          SALONBOARD_NET_PREFLIGHT_MS: "20000"
+          SALONBOARD_GOTO_TIMEOUT_MS: "45000"
+          SALONBOARD_GOTO_RETRY_TIMEOUT_MS: "25000"
           SALONBOARD_GOTO_WAIT_UNTIL: "commit"
-          SALONBOARD_GOTO_RETRIES: "4"
+          SALONBOARD_GOTO_RETRIES: "2"
+          SALONBOARD_CHROMIUM_EXTRA_ARGS: "--disable-dev-shm-usage"
         run: npm run sb:login
 
       - name: Upload debug screenshots (if any)

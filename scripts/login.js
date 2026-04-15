@@ -1,7 +1,12 @@
 const fs = require("fs");
+const dns = require("dns");
 const path = require("path");
 const dotenv = require("dotenv");
 const { chromium } = require("playwright");
+
+if (typeof dns.setDefaultResultOrder === "function") {
+  dns.setDefaultResultOrder("ipv4first");
+}
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config();
@@ -18,6 +23,9 @@ const LOGIN_COOLDOWN_MINUTES = Number(process.env.SALONBOARD_LOGIN_COOLDOWN_MINU
 const FORCE_LOGIN = process.env.SALONBOARD_FORCE_LOGIN === "1";
 const TOP_URL = "https://salonboard.com/CLP/bt/top/";
 const GOTO_TIMEOUT_MS = Number(process.env.SALONBOARD_GOTO_TIMEOUT_MS || "45000");
+const GOTO_RETRY_TIMEOUT_MS = Number(
+  process.env.SALONBOARD_GOTO_RETRY_TIMEOUT_MS || String(GOTO_TIMEOUT_MS)
+);
 const GOTO_WAIT_UNTIL = process.env.SALONBOARD_GOTO_WAIT_UNTIL || "domcontentloaded";
 const GOTO_RETRIES = Math.max(1, Number(process.env.SALONBOARD_GOTO_RETRIES || "3"));
 const USER_AGENT =
@@ -83,15 +91,45 @@ function browserContextOptions(storageStatePath) {
   };
 }
 
+async function netPreflight(urlString) {
+  if (process.env.SALONBOARD_NET_PREFLIGHT === "0") return;
+  const timeoutMs = Number(process.env.SALONBOARD_NET_PREFLIGHT_MS || "20000");
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(urlString, {
+      method: "GET",
+      redirect: "follow",
+      signal: controller.signal,
+      headers: {
+        "User-Agent": USER_AGENT,
+        Accept: "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
+      },
+    });
+    await response.body?.cancel().catch(() => {});
+    console.log(`net preflight: HTTP ${response.status} (${timeoutMs}ms budget)`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(
+      `salonboard.com への到達確認に失敗しました。GitHub Actions のランナーから遮断・遅延されている可能性があります。(${message})`
+    );
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function gotoWithRetries(page, url, label) {
   let lastError;
   for (let attempt = 1; attempt <= GOTO_RETRIES; attempt += 1) {
+    const timeoutMs = attempt === 1 ? GOTO_TIMEOUT_MS : Math.min(GOTO_RETRY_TIMEOUT_MS, GOTO_TIMEOUT_MS);
     try {
-      await page.goto(url, { waitUntil: GOTO_WAIT_UNTIL, timeout: GOTO_TIMEOUT_MS });
+      await page.goto(url, { waitUntil: GOTO_WAIT_UNTIL, timeout: timeoutMs });
       return;
     } catch (error) {
       lastError = error;
-      console.error(`${label}: goto attempt ${attempt}/${GOTO_RETRIES} failed: ${error.message}`);
+      console.error(
+        `${label}: goto attempt ${attempt}/${GOTO_RETRIES} failed (timeout ${timeoutMs}ms, waitUntil=${GOTO_WAIT_UNTIL}): ${error.message}`
+      );
       if (attempt < GOTO_RETRIES) {
         const backoffMs = 2000 * attempt;
         await page.waitForTimeout(backoffMs);
@@ -115,7 +153,16 @@ async function isLoggedInWithCurrentContext(context) {
 }
 
 async function runLogin() {
-  const browser = await chromium.launch({ headless: HEADLESS, slowMo: HEADLESS ? 0 : 100 });
+  await netPreflight(LOGIN_URL);
+
+  const chromiumArgs = (process.env.SALONBOARD_CHROMIUM_EXTRA_ARGS || "")
+    .split(/\s+/)
+    .filter(Boolean);
+  const browser = await chromium.launch({
+    headless: HEADLESS,
+    slowMo: HEADLESS ? 0 : 100,
+    args: chromiumArgs.length > 0 ? chromiumArgs : undefined,
+  });
   const meta = readMeta();
   const hasState = fs.existsSync(STATE_PATH);
   const useSavedState = hasState && !FORCE_LOGIN;
